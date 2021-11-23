@@ -103,16 +103,18 @@ namespace Stand_7872_11_00_400
             // checkBoxBright1
             // 
             this.checkBoxBright1.AutoSize = true;
+            this.checkBoxBright1.Enabled = false;
             this.checkBoxBright1.Location = new System.Drawing.Point(6, 54);
             this.checkBoxBright1.Name = "checkBoxBright1";
             this.checkBoxBright1.Size = new System.Drawing.Size(130, 17);
             this.checkBoxBright1.TabIndex = 1;
             this.checkBoxBright1.Text = "Включить подсветку";
             this.checkBoxBright1.UseVisualStyleBackColor = true;
-            this.checkBoxBright1.CheckedChanged += new System.EventHandler(this.checkBoxEvents);
+            this.checkBoxBright1.CheckedChanged += new System.EventHandler(this.checkBoxBright1Events);
             // 
             // numericUpDownBright1
             // 
+            this.numericUpDownBright1.Enabled = false;
             this.numericUpDownBright1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownBright1.Location = new System.Drawing.Point(41, 18);
             this.numericUpDownBright1.Maximum = new decimal(new int[] {
@@ -139,16 +141,18 @@ namespace Stand_7872_11_00_400
             // checkBoxMotor1
             // 
             this.checkBoxMotor1.AutoSize = true;
+            this.checkBoxMotor1.Enabled = false;
             this.checkBoxMotor1.Location = new System.Drawing.Point(6, 54);
             this.checkBoxMotor1.Name = "checkBoxMotor1";
             this.checkBoxMotor1.Size = new System.Drawing.Size(110, 17);
             this.checkBoxMotor1.TabIndex = 1;
             this.checkBoxMotor1.Text = "Старт двигателя";
             this.checkBoxMotor1.UseVisualStyleBackColor = true;
-            this.checkBoxMotor1.CheckedChanged += new System.EventHandler(this.checkBoxEvents);
+            this.checkBoxMotor1.CheckedChanged += new System.EventHandler(this.checkBoxStart1Events);
             // 
             // numericUpDownSpeed1
             // 
+            this.numericUpDownSpeed1.Enabled = false;
             this.numericUpDownSpeed1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownSpeed1.Location = new System.Drawing.Point(39, 19);
             this.numericUpDownSpeed1.Maximum = new decimal(new int[] {
@@ -192,16 +196,18 @@ namespace Stand_7872_11_00_400
             // checkBoxBright2
             // 
             this.checkBoxBright2.AutoSize = true;
+            this.checkBoxBright2.Enabled = false;
             this.checkBoxBright2.Location = new System.Drawing.Point(6, 54);
             this.checkBoxBright2.Name = "checkBoxBright2";
             this.checkBoxBright2.Size = new System.Drawing.Size(130, 17);
             this.checkBoxBright2.TabIndex = 1;
             this.checkBoxBright2.Text = "Включить подсветку";
             this.checkBoxBright2.UseVisualStyleBackColor = true;
-            this.checkBoxBright2.CheckedChanged += new System.EventHandler(this.checkBoxEvents);
+            this.checkBoxBright2.CheckedChanged += new System.EventHandler(this.checkBoxBright2Events);
             // 
             // numericUpDownBright2
             // 
+            this.numericUpDownBright2.Enabled = false;
             this.numericUpDownBright2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownBright2.Location = new System.Drawing.Point(41, 18);
             this.numericUpDownBright2.Maximum = new decimal(new int[] {
@@ -228,16 +234,18 @@ namespace Stand_7872_11_00_400
             // checkBoxMotor2
             // 
             this.checkBoxMotor2.AutoSize = true;
+            this.checkBoxMotor2.Enabled = false;
             this.checkBoxMotor2.Location = new System.Drawing.Point(6, 54);
             this.checkBoxMotor2.Name = "checkBoxMotor2";
             this.checkBoxMotor2.Size = new System.Drawing.Size(110, 17);
             this.checkBoxMotor2.TabIndex = 1;
             this.checkBoxMotor2.Text = "Старт двигателя";
             this.checkBoxMotor2.UseVisualStyleBackColor = true;
-            this.checkBoxMotor2.CheckedChanged += new System.EventHandler(this.checkBoxEvents);
+            this.checkBoxMotor2.CheckedChanged += new System.EventHandler(this.checkBoxStart2Events);
             // 
             // numericUpDownSpeed2
             // 
+            this.numericUpDownSpeed2.Enabled = false;
             this.numericUpDownSpeed2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownSpeed2.Location = new System.Drawing.Point(39, 19);
             this.numericUpDownSpeed2.Maximum = new decimal(new int[] {
@@ -257,6 +265,7 @@ namespace Stand_7872_11_00_400
             // 
             // comboBoxCollimators
             // 
+            this.comboBoxCollimators.Enabled = false;
             this.comboBoxCollimators.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.comboBoxCollimators.FormattingEnabled = true;
             this.comboBoxCollimators.Location = new System.Drawing.Point(366, 33);
@@ -267,12 +276,14 @@ namespace Stand_7872_11_00_400
             // 
             // buttonStart
             // 
+            this.buttonStart.Enabled = false;
             this.buttonStart.Location = new System.Drawing.Point(22, 320);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(152, 36);
             this.buttonStart.TabIndex = 3;
             this.buttonStart.Text = "Старт";
             this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
             // serialPort1
             // 
@@ -289,6 +300,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonLoad
             // 
+            this.buttonLoad.Enabled = false;
             this.buttonLoad.Location = new System.Drawing.Point(366, 274);
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(142, 35);
@@ -299,6 +311,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonSave
             // 
+            this.buttonSave.Enabled = false;
             this.buttonSave.Location = new System.Drawing.Point(366, 320);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(142, 35);
@@ -313,6 +326,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonStartAll
             // 
+            this.buttonStartAll.Enabled = false;
             this.buttonStartAll.Location = new System.Drawing.Point(187, 320);
             this.buttonStartAll.Name = "buttonStartAll";
             this.buttonStartAll.Size = new System.Drawing.Size(154, 36);
@@ -323,6 +337,7 @@ namespace Stand_7872_11_00_400
             // 
             // textBoxUserNote
             // 
+            this.textBoxUserNote.Enabled = false;
             this.textBoxUserNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textBoxUserNote.Location = new System.Drawing.Point(366, 86);
             this.textBoxUserNote.Name = "textBoxUserNote";

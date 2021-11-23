@@ -39,7 +39,7 @@ namespace Stand_7872_11_00_400
 
         public override string ToString()
         {
-            string print = "COLLIMATOR---" + "ID: " + ID + "  TYPE: " + Type + "  NAME: " + Name + "  PORT: " + Port;
+            string print = "COLLIMATOR---" + "ID: {X}" + ID + "  TYPE: " + Type + "  NAME: " + Name + "  PORT: " + Port;
             print += "\n            Grid1---" + "Speed: " + Grid1.Speed + "  Direction: " + Grid1.Direct + "  Bright: " + Grid1.Bright + "  isStarted: " + Grid1.isStarted + "  isHeated: " + Grid1.isHeated;
             if (Grid2 != null) print += "\n            Grid2---" + "Speed: " + Grid2.Speed + "  Direction: " + Grid2.Direct + "  Bright: " + Grid2.Bright + "  isStarted: " + Grid2.isStarted + "  isHeated: " + Grid2.isHeated;
             return print;

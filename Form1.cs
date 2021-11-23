@@ -40,6 +40,39 @@ namespace Stand_7872_11_00_400
 
             //selectedCollimator = new Collimator(16, "Collimator 1", "COM8", new Grid(), null) ;
         }
+
+        private void buttonInit_Click(object sender, EventArgs e)
+        {
+            isInit = true;
+            comboBoxCollimators.Items.Clear();
+
+            string[] array;
+            progressBar1.Value = 0;
+            //progressBar1.Maximum = 7;
+            for (byte i = 16; i < 65; i += 16)
+            {
+                initCollimators(i);
+                progressBar1.Increment(1);
+                initCollimators((byte)(i + 1));
+                progressBar1.Increment(1);
+            }
+
+            array = new string[connectedCollimators.Count];
+            int k = 0;
+            foreach (Collimator collimator in connectedCollimators)
+            {
+                array[k++] = collimator.Name;
+                //Console.WriteLine(connectedCollimators);
+            }
+            if (array.Length == 1) comboBoxCollimators.Items.Add(array[0]);
+            else if (array.Length > 1) comboBoxCollimators.Items.AddRange(array);
+            else MessageBox.Show("Коллиматоры не обнаружены!");
+
+            isInit = false;
+
+            comboBoxCollimators.Enabled = true;
+            buttonLoad.Enabled = true;
+        }
         public void initCollimators(byte id)
         {
             for (int i = 0; i < ports.Length; i++)
@@ -51,8 +84,7 @@ namespace Stand_7872_11_00_400
                 {
                     bufTx[0] = STARTBYTE;
                     bufTx[1] = id;
-                    //if (isFoundOpt == true) bufRx[12] = 0;
-                    //else bufRx[12] = 1;
+                    bufTx[12] = (isFoundOpt == true) ? (byte)0 : (byte)1;
                     bufTx[13] = calcSumXOR(bufTx, 13);
                     serialPort1.Write(bufTx, 0, 14);
 
@@ -72,34 +104,83 @@ namespace Stand_7872_11_00_400
             }
 
         }
-        private void buttonInit_Click(object sender, EventArgs e)
+
+        public byte[] createPacketToSend (Collimator collimator)
         {
-            isInit = true;
-            comboBoxCollimators.Items.Clear();
+            byte[] packToSend = new byte[14];
+            packToSend[0] = Form1.STARTBYTE;
+            packToSend[1] = collimator.ID;
 
-            string[] array;
-            progressBar1.Value = 0;
-            //progressBar1.Maximum = 7;
-            for (byte i = 16; i < 65; i += 16)
+            packToSend[2] = getFlags(collimator);
+            for (byte i = 3; i < 9; i++)
+                packToSend[i] = 0;
+
+            packToSend[9] = (byte)(collimator.Grid1.Bright * 2);
+
+            sbyte sp1 = collimator.Grid1.Speed;
+            sbyte sp2 = 0;
+            if (sp1 < 0)
             {
-                initCollimators(i);
-                progressBar1.Increment(1);
-                initCollimators((byte)(i + 1));
-                progressBar1.Increment(1);
+                sp1 = (sbyte)(sp1 * (-1));
+                sp1 = 0;
             }
 
-            array = new string[connectedCollimators.Count];
-            int k = 0;
-            foreach(Collimator collimator in connectedCollimators)
+            if (collimator.Grid2 != null)
             {
-                array[k++] = collimator.Name;
-                //Console.WriteLine(connectedCollimators);
+                packToSend[10] = (byte)(collimator.Grid2.Bright * 2);
+                sp2 = collimator.Grid2.Speed;
+                if (sp2 < 0) sp2 = (sbyte)(sp2 * (-1));
             }
-            if (array.Length == 1) comboBoxCollimators.Items.Add(array[0]);
-            else if (array.Length > 1) comboBoxCollimators.Items.AddRange(array);
-            else MessageBox.Show("Коллиматоры не обнаружены!");
 
-            isInit = false;            
+            int speedByte = sp1 + ((sp2 << 4) & 0xF0);
+            packToSend[11] = (byte)speedByte;
+
+            packToSend[12] = 0;
+
+            packToSend[13] = Form1.calcSumXOR(packToSend, 13);
+
+            return packToSend;
+        }
+
+        public byte getFlags(Collimator collimator)
+        {
+            int bt = 0;
+
+            if (collimator.Grid1.isStarted) bt |= 0x01;
+            else bt &= ~(1 << 0);
+
+            if (collimator.Grid1.Direct == 1) bt |= 0x02;
+            else bt &= ~(1 << 1);
+
+            if (collimator.Grid1.isHeated) bt |= 0x40;
+            else bt &= ~(1 << 6);
+
+            if(collimator.Grid2 != null)
+            {
+                if (collimator.Grid2.isStarted) bt |= 0x04;
+                else bt &= ~(1 << 2);
+
+                if (collimator.Grid2.Direct == 1) bt |= 0x08;
+                else bt &= ~(1 << 3);
+
+                if (collimator.Grid2.isHeated) bt |= 0x80;
+                else bt &= ~(1 << 7);
+            }            
+
+            return (byte)bt;
+        }
+        public void sendData(string serialPort, byte[] pack)
+        {
+            serialPort1.PortName = serialPort;
+            serialPort1.Open();
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.Write(pack, 0, 14);
+                Console.WriteLine("TX: " + BitConverter.ToString(pack));
+               // Console.WriteLine("HEAT: " + pack[9] + "%");
+                Thread.Sleep(200);
+                serialPort1.Close();
+            }
         }
 
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
@@ -133,7 +214,7 @@ namespace Stand_7872_11_00_400
                                     {
                                         name = "ТВ";
                                         name = name + (int)(bufRx[1] >> 4);
-                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(), new Grid()));
+                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(0, 0, 0, false, false), new Grid(0, 0, 0, false, false)));
                                         if (((tmp >> 2) & 0x03) == 0x03) isFoundOpt = true;
                                         else isFoundOpt = false;
 
@@ -142,7 +223,7 @@ namespace Stand_7872_11_00_400
                                     {
                                         name = "ТПВ";
                                         name = name + (int)(bufRx[1] >> 4);
-                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(), null));
+                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(0, 0, 0, false, false), null));
                                         if (((tmp >> 2) & 0x01) == 0x01) isFoundOpt = true;
                                         else isFoundOpt = false;
                                     }
@@ -179,10 +260,28 @@ namespace Stand_7872_11_00_400
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
             string fileName = openFileDialog1.FileName;
-
+            if(readedFromXMLCollimators != null) readedFromXMLCollimators.Clear();
             readedFromXMLCollimators = DeserializeXML(fileName);
+            
             foreach (Collimator readCol in readedFromXMLCollimators)
+            {
                 Console.WriteLine(readCol);
+
+            }               
+
+
+            for(int i = 0; i < connectedCollimators.Count; i++)
+            {
+                for(int j = 0; j < readedFromXMLCollimators.Count; i++)
+                {
+                    if(connectedCollimators[i].Name.Equals(readedFromXMLCollimators[j].Name))
+                    {
+                        connectedCollimators[i] = readedFromXMLCollimators[j];
+                        readedFromXMLCollimators.RemoveAt(j);
+                        break;
+                    }
+                }
+            }
            /* for(int i = 0; i < readedFromXMLCollimators.Count; i++)
             {
                 Console.WriteLine(readedFromXMLCollimators[i]);
@@ -256,22 +355,8 @@ namespace Stand_7872_11_00_400
             if (selectedCollimator != null && selectedCollimator.Grid2 != null)
                 selectedCollimator.Grid2.Bright = (byte) numericUpDownBright2.Value;
         }
-        //-------------------------Checkboxex----------------------------------
-        private void checkBoxEvents(object sender, EventArgs e)
-        {
-            if(selectedCollimator != null)
-            {
-                selectedCollimator.Grid1.isStarted = checkBoxMotor1.Checked;
-                selectedCollimator.Grid1.isHeated = checkBoxBright1.Checked;
-
-                if (selectedCollimator.Grid2 != null)
-                {
-                    selectedCollimator.Grid2.isStarted = checkBoxMotor2.Checked;
-                    selectedCollimator.Grid2.isHeated = checkBoxBright2.Checked;
-                }
-            }            
-        }
-
+        
+       
         private void buttonStartAll_Click(object sender, EventArgs e)
         {
             
@@ -281,21 +366,31 @@ namespace Stand_7872_11_00_400
         private void comboBoxCollimators_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedName = comboBoxCollimators.SelectedItem.ToString();
-            foreach(Collimator collimator in connectedCollimators)
+            selectedCollimator = null;
+            foreach (Collimator collimator in connectedCollimators)
             {
                 if(selectedName.Equals(collimator.Name))
                 {
                     selectedCollimator = collimator;
                     Console.WriteLine("SelectedCollimator: " + selectedCollimator);
+                    
                     break;
                 }
             }
+            
+            checkBoxMotor1.Enabled = true;
+            checkBoxBright1.Enabled = true;
 
             numericUpDownSpeed1.Value = selectedCollimator.Grid1.Speed;
             numericUpDownBright1.Value = selectedCollimator.Grid1.Bright;
 
+            Console.WriteLine("selectedCollimator.Grid1.isHeated " + selectedCollimator.Grid1.isHeated);
             checkBoxMotor1.Checked = selectedCollimator.Grid1.isStarted;
+            Console.WriteLine("selectedCollimator.Grid1.isHeated " + selectedCollimator.Grid1.isHeated);
+            Console.WriteLine("selectedCollimator.Grid1.isStarted " + selectedCollimator.Grid1.isStarted);
+            
             checkBoxBright1.Checked = selectedCollimator.Grid1.isHeated;
+            Console.WriteLine("selectedCollimator.Grid1.isHeated  " + selectedCollimator.Grid1.isHeated);
 
             if (selectedCollimator.Grid2 != null)
             {
@@ -305,8 +400,69 @@ namespace Stand_7872_11_00_400
                 checkBoxMotor2.Checked = selectedCollimator.Grid2.isStarted;
                 checkBoxBright2.Checked = selectedCollimator.Grid2.isHeated;
             }
+            else
+            {
+                numericUpDownSpeed2.Value = 0;
+                numericUpDownBright2.Value = 0;
+
+                checkBoxMotor2.Checked = false;
+                checkBoxBright2.Checked = false;
+            }
+
+            buttonStart.Enabled = true;
+            buttonStartAll.Enabled = true;
+
+            numericUpDownSpeed1.Enabled = true;
+            numericUpDownBright1.Enabled = true;
 
             
+
+
+            if (selectedCollimator.Grid2 != null)
+            {
+                numericUpDownSpeed2.Enabled = true;
+                numericUpDownBright2.Enabled = true;
+
+                checkBoxMotor2.Enabled = true;
+                checkBoxBright2.Enabled = true;
+            }
+            else
+            {
+                numericUpDownSpeed2.Enabled = false;
+                numericUpDownBright2.Enabled = false;
+
+                checkBoxMotor2.Enabled = false;
+                checkBoxBright2.Enabled = false;
+            }
+
+            buttonSave.Enabled = true;
+
+
+        }
+
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+            sendData(selectedCollimator.Port, createPacketToSend(selectedCollimator));
+        }
+        //-------------------------Checkboxex----------------------------------
+        private void checkBoxStart1Events(object sender, EventArgs e)
+        {
+            selectedCollimator.Grid1.isStarted = checkBoxMotor1.Checked;            
+        }
+
+        private void checkBoxBright1Events(object sender, EventArgs e)
+        {           
+            selectedCollimator.Grid1.isHeated = checkBoxBright1.Checked;
+        }
+
+        private void checkBoxStart2Events(object sender, EventArgs e)
+        {            
+            if(selectedCollimator.Grid2 != null) selectedCollimator.Grid2.isStarted = checkBoxMotor2.Checked;              
+        }
+
+        private void checkBoxBright2Events(object sender, EventArgs e)
+        {
+            if (selectedCollimator.Grid2 != null) selectedCollimator.Grid2.isHeated = checkBoxBright2.Checked;            
         }
     }
 }
