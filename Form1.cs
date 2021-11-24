@@ -48,6 +48,8 @@ namespace Stand_7872_11_00_400
 
             string[] array;
             progressBar1.Value = 0;
+            labelInit.Visible = true;
+            
             //progressBar1.Maximum = 7;
             for (byte i = 16; i < 65; i += 16)
             {
@@ -56,16 +58,26 @@ namespace Stand_7872_11_00_400
                 initCollimators((byte)(i + 1));
                 progressBar1.Increment(1);
             }
-
-            array = new string[connectedCollimators.Count];
+            labelInit.Visible = false;
+            /*array = new string[connectedCollimators.Count];
             int k = 0;
             foreach (Collimator collimator in connectedCollimators)
             {
                 array[k++] = collimator.Name;
                 //Console.WriteLine(connectedCollimators);
             }
+            
             if (array.Length == 1) comboBoxCollimators.Items.Add(array[0]);
             else if (array.Length > 1) comboBoxCollimators.Items.AddRange(array);
+            else MessageBox.Show("Коллиматоры не обнаружены!");*/
+
+            if (connectedCollimators.Count > 0)
+            {
+                foreach (Collimator collimator in connectedCollimators)
+                {
+                    comboBoxCollimators.Items.Add(collimator);
+                }
+            }
             else MessageBox.Show("Коллиматоры не обнаружены!");
 
             isInit = false;
@@ -262,15 +274,37 @@ namespace Stand_7872_11_00_400
             string fileName = openFileDialog1.FileName;
             if(readedFromXMLCollimators != null) readedFromXMLCollimators.Clear();
             readedFromXMLCollimators = DeserializeXML(fileName);
+
+            labelFile.Text = new FileInfo(fileName).Name;
             
             foreach (Collimator readCol in readedFromXMLCollimators)
             {
-                Console.WriteLine(readCol);
+                Console.WriteLine("SPEED" + readCol.Grid1.Speed);
 
             }               
 
-
             for(int i = 0; i < connectedCollimators.Count; i++)
+            {
+                for(int j = 0; j < readedFromXMLCollimators.Count; j++)
+                {
+                    if(connectedCollimators[i].ID == readedFromXMLCollimators[j].ID)
+                    {
+                        string port = connectedCollimators[i].Port;
+                        connectedCollimators[i] = readedFromXMLCollimators[j];
+                        connectedCollimators[i].Port = port;
+                        readedFromXMLCollimators.RemoveAt(j);
+                        break;
+                    }
+                }
+            }
+
+            comboBoxCollimators.Items.Clear();
+            foreach (Collimator collimator in connectedCollimators)
+            {
+                comboBoxCollimators.Items.Add(collimator);
+            }
+
+            /*for(int i = 0; i < connectedCollimators.Count; i++)
             {
                 for(int j = 0; j < readedFromXMLCollimators.Count; i++)
                 {
@@ -281,7 +315,7 @@ namespace Stand_7872_11_00_400
                         break;
                     }
                 }
-            }
+            }*/
            /* for(int i = 0; i < readedFromXMLCollimators.Count; i++)
             {
                 Console.WriteLine(readedFromXMLCollimators[i]);
@@ -365,7 +399,7 @@ namespace Stand_7872_11_00_400
 
         private void comboBoxCollimators_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedName = comboBoxCollimators.SelectedItem.ToString();
+            /*string selectedName = comboBoxCollimators.SelectedItem.ToString();
             selectedCollimator = null;
             foreach (Collimator collimator in connectedCollimators)
             {
@@ -376,21 +410,24 @@ namespace Stand_7872_11_00_400
                     
                     break;
                 }
-            }
-            
+            }*/
+
+            selectedCollimator = (Collimator)comboBoxCollimators.SelectedItem;
+            Console.WriteLine("SELECTED COLLIMATOR: " + selectedCollimator);
+
+            textBoxPort.Text = selectedCollimator.Port;
+
+            buttonChangeName.Enabled = true;
+
             checkBoxMotor1.Enabled = true;
             checkBoxBright1.Enabled = true;
 
             numericUpDownSpeed1.Value = selectedCollimator.Grid1.Speed;
             numericUpDownBright1.Value = selectedCollimator.Grid1.Bright;
 
-            Console.WriteLine("selectedCollimator.Grid1.isHeated " + selectedCollimator.Grid1.isHeated);
-            checkBoxMotor1.Checked = selectedCollimator.Grid1.isStarted;
-            Console.WriteLine("selectedCollimator.Grid1.isHeated " + selectedCollimator.Grid1.isHeated);
-            Console.WriteLine("selectedCollimator.Grid1.isStarted " + selectedCollimator.Grid1.isStarted);
             
+            checkBoxMotor1.Checked = selectedCollimator.Grid1.isStarted;            
             checkBoxBright1.Checked = selectedCollimator.Grid1.isHeated;
-            Console.WriteLine("selectedCollimator.Grid1.isHeated  " + selectedCollimator.Grid1.isHeated);
 
             if (selectedCollimator.Grid2 != null)
             {
@@ -463,6 +500,23 @@ namespace Stand_7872_11_00_400
         private void checkBoxBright2Events(object sender, EventArgs e)
         {
             if (selectedCollimator.Grid2 != null) selectedCollimator.Grid2.isHeated = checkBoxBright2.Checked;            
+        }
+
+        private void buttonChangeName_Click(object sender, EventArgs e)
+        {            
+            textBoxUserName.Enabled = true;
+            buttonApplyName.Enabled = true;
+            buttonChangeName.Enabled = false;
+        }
+
+        private void buttonApplyName_Click(object sender, EventArgs e)
+        {
+            textBoxUserName.Enabled = false;
+            selectedCollimator.Name = textBoxUserName.Text;
+            textBoxUserName.Clear();
+            buttonApplyName.Enabled = false;
+            comboBoxCollimators.Items[comboBoxCollimators.SelectedIndex] = selectedCollimator;
+            buttonChangeName.Enabled = true;
         }
     }
 }
