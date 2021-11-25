@@ -20,16 +20,19 @@ namespace Stand_7872_11_00_400
 
         public byte Type { get; set; }
 
+        public bool IsFoundOpt { get; set; }
+
         public Grid Grid1 { get; set; }
         public Grid Grid2 { get; set; }
-        public Collimator(byte id, string name, string port, Grid grid1, Grid grid2)
+        public Collimator(byte id, string name, string port, bool isFoundOpt, Grid grid1, Grid grid2)
         {
             ID = id;
             Name = name;
             Port = port;
             Type = (byte)(ID % 2);
+            IsFoundOpt = isFoundOpt;
             Grid1 = grid1;
-            Grid2 = grid2;
+            Grid2 = grid2;            
         }
 
         
@@ -38,15 +41,17 @@ namespace Stand_7872_11_00_400
 
         }
 
+        public string getInfo()
+        {
+            string info = "---КОЛЛИМАТОР---" + "ID: " + ID.ToString("X") + "  НАЗВ.: " + Name;
+            info += "\n     Сетка 1---" + "Скорость: " + Grid1.Speed + "       Яркость: " + Grid1.Bright + "\n                      Ст.двиг.: " + Grid1.isStarted + "    Вкл.подсв.: " + Grid1.isHeated;
+            if (Grid2 != null) info += "\n     Сетка 2---" + "Скорость: " + Grid2.Speed + "       Яркость: " + Grid2.Bright + "\n                      Ст.двиг.: " + Grid2.isStarted + "    Вкл.подсв.: " + Grid2.isHeated + "\n\n";
+            else info += "\n\n";
+            return info;
+        }
         public override string ToString()
         {
-           // string print = Type == 0 ? "TB" : "ТПВ";
-            //print += ID >> 4;
             return Name;
-            /*string print = "COLLIMATOR---" + "ID: {X}" + ID + "  TYPE: " + Type + "  NAME: " + Name + "  PORT: " + Port;
-            print += "\n            Grid1---" + "Speed: " + Grid1.Speed + "  Direction: " + Grid1.Direct + "  Bright: " + Grid1.Bright + "  isStarted: " + Grid1.isStarted + "  isHeated: " + Grid1.isHeated;
-            if (Grid2 != null) print += "\n            Grid2---" + "Speed: " + Grid2.Speed + "  Direction: " + Grid2.Direct + "  Bright: " + Grid2.Bright + "  isStarted: " + Grid2.isStarted + "  isHeated: " + Grid2.isHeated;
-            return print;*/
         }
     }
 }

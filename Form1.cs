@@ -25,7 +25,7 @@ namespace Stand_7872_11_00_400
         List<Collimator> readedFromXMLCollimators = new List<Collimator>();
         Collimator selectedCollimator;
         string[] ports;
-        bool isFoundOpt = false;
+       
 
         public Form1()
         {
@@ -37,21 +37,26 @@ namespace Stand_7872_11_00_400
             ports = SerialPort.GetPortNames();
             for (int i = 0; i < ports.Length; i++)
                 Console.WriteLine(ports[i]);
-
-            //selectedCollimator = new Collimator(16, "Collimator 1", "COM8", new Grid(), null) ;
         }
 
         private void buttonInit_Click(object sender, EventArgs e)
         {
             isInit = true;
+            connectedCollimators.Clear();
             comboBoxCollimators.Items.Clear();
 
-            string[] array;
             progressBar1.Value = 0;
             labelInit.Visible = true;
-            
-            //progressBar1.Maximum = 7;
-            for (byte i = 16; i < 65; i += 16)
+
+            checkBoxBright1.Checked = checkBoxBright2.Checked = checkBoxMotor1.Checked = checkBoxMotor2.Checked = false;
+            numericUpDownBright1.Value = numericUpDownBright2.Value = numericUpDownSpeed1.Value = numericUpDownSpeed2.Value = 0;
+            textBoxPort.Text = "";
+            numericUpDownBright1.Enabled = numericUpDownBright2.Enabled = numericUpDownSpeed1.Enabled = numericUpDownSpeed2.Enabled = false;
+            checkBoxBright1.Enabled = checkBoxBright2.Enabled = checkBoxMotor1.Enabled = checkBoxMotor2.Enabled = false;
+            buttonChangeName.Enabled = false;
+            buttonStart.Enabled = false;
+
+            for (byte i = 16; i < 65; i += 16)  
             {
                 initCollimators(i);
                 progressBar1.Increment(1);
@@ -59,32 +64,29 @@ namespace Stand_7872_11_00_400
                 progressBar1.Increment(1);
             }
             labelInit.Visible = false;
-            /*array = new string[connectedCollimators.Count];
-            int k = 0;
-            foreach (Collimator collimator in connectedCollimators)
-            {
-                array[k++] = collimator.Name;
-                //Console.WriteLine(connectedCollimators);
-            }
-            
-            if (array.Length == 1) comboBoxCollimators.Items.Add(array[0]);
-            else if (array.Length > 1) comboBoxCollimators.Items.AddRange(array);
-            else MessageBox.Show("Коллиматоры не обнаружены!");*/
+            buttonStartAll.Enabled = true;
+
+            isInit = false;
 
             if (connectedCollimators.Count > 0)
             {
                 foreach (Collimator collimator in connectedCollimators)
                 {
                     comboBoxCollimators.Items.Add(collimator);
+                    if (!collimator.IsFoundOpt) sendData(collimator.Port, createPacketToSend(collimator));
                 }
+                
+                comboBoxCollimators.Enabled = true;
+                buttonLoad.Enabled = true;
+                buttonShowAllSettings.Enabled = true;
+
+                comboBoxCollimators.SelectedIndex = 0;
             }
             else MessageBox.Show("Коллиматоры не обнаружены!");
 
-            isInit = false;
-
-            comboBoxCollimators.Enabled = true;
-            buttonLoad.Enabled = true;
+            
         }
+       
         public void initCollimators(byte id)
         {
             for (int i = 0; i < ports.Length; i++)
@@ -96,7 +98,7 @@ namespace Stand_7872_11_00_400
                 {
                     bufTx[0] = STARTBYTE;
                     bufTx[1] = id;
-                    bufTx[12] = (isFoundOpt == true) ? (byte)0 : (byte)1;
+                    bufTx[12] = 0;
                     bufTx[13] = calcSumXOR(bufTx, 13);
                     serialPort1.Write(bufTx, 0, 14);
 
@@ -147,7 +149,7 @@ namespace Stand_7872_11_00_400
             int speedByte = sp1 + ((sp2 << 4) & 0xF0);
             packToSend[11] = (byte)speedByte;
 
-            packToSend[12] = 0;
+            packToSend[12] =  (collimator.IsFoundOpt == true) ? (byte) 0 : (byte) 1;
 
             packToSend[13] = Form1.calcSumXOR(packToSend, 13);
 
@@ -222,22 +224,23 @@ namespace Stand_7872_11_00_400
                                 {
                                     int tmp = bufRx[3];
                                     string name = "";
+                                    bool isFoundOpt = false;
                                     if (bufRx[1] % 2 == 0)
                                     {
                                         name = "ТВ";
                                         name = name + (int)(bufRx[1] >> 4);
-                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(0, 0, 0, false, false), new Grid(0, 0, 0, false, false)));
                                         if (((tmp >> 2) & 0x03) == 0x03) isFoundOpt = true;
                                         else isFoundOpt = false;
+                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, isFoundOpt, new Grid(0, 0, 0, false, false), new Grid(0, 0, 0, false, false)));                                        
 
                                     }
                                     else
                                     {
                                         name = "ТПВ";
                                         name = name + (int)(bufRx[1] >> 4);
-                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, new Grid(0, 0, 0, false, false), null));
                                         if (((tmp >> 2) & 0x01) == 0x01) isFoundOpt = true;
                                         else isFoundOpt = false;
+                                        connectedCollimators.Add(new Collimator(bufRx[1], name, serialPort1.PortName, isFoundOpt, new Grid(0, 0, 0, false, false), null));                                        
                                     }
                                     Console.WriteLine("IS FOUND OPTOCOUPLER: " + isFoundOpt);
                                     
@@ -303,25 +306,7 @@ namespace Stand_7872_11_00_400
             {
                 comboBoxCollimators.Items.Add(collimator);
             }
-
-            /*for(int i = 0; i < connectedCollimators.Count; i++)
-            {
-                for(int j = 0; j < readedFromXMLCollimators.Count; i++)
-                {
-                    if(connectedCollimators[i].Name.Equals(readedFromXMLCollimators[j].Name))
-                    {
-                        connectedCollimators[i] = readedFromXMLCollimators[j];
-                        readedFromXMLCollimators.RemoveAt(j);
-                        break;
-                    }
-                }
-            }*/
-           /* for(int i = 0; i < readedFromXMLCollimators.Count; i++)
-            {
-                Console.WriteLine(readedFromXMLCollimators[i]);
-            }*/
-            //string fileText = File.ReadAllText(fileName);
-            //Console.WriteLine(fileText);
+            comboBoxCollimators.SelectedIndex = 0;
         }
 
         private void buttonSave_Click(object sender, EventArgs e)
@@ -331,10 +316,7 @@ namespace Stand_7872_11_00_400
                 return;
             string filename = saveFileDialog1.FileName;
             Console.WriteLine(filename);
-            //connectedCollimators.Add(new Collimator(11, "Collimator 11", "COM9", new Grid(1, 0, 7, true, false), null));
-           // connectedCollimators.Add(new Collimator(17, "Collimator 17", "COM10", new Grid(5, 1, 4, true, true), new Grid(4, 8, 2, true, false)));
             SerializeXML(connectedCollimators, filename);
-            //File.WriteAllText(filename, fileText);
         }
         private void SerializeXML(List<Collimator> collimator, string fileName)
         {
@@ -393,8 +375,11 @@ namespace Stand_7872_11_00_400
        
         private void buttonStartAll_Click(object sender, EventArgs e)
         {
+            foreach(Collimator collimator in connectedCollimators)
+            {
+                sendData(collimator.Port, createPacketToSend(collimator));
+            }
             
-            Console.WriteLine(selectedCollimator);
         }
 
         private void comboBoxCollimators_SelectedIndexChanged(object sender, EventArgs e)
@@ -418,6 +403,8 @@ namespace Stand_7872_11_00_400
             textBoxPort.Text = selectedCollimator.Port;
 
             buttonChangeName.Enabled = true;
+            textBoxUserName.Enabled = false;
+            buttonApplyName.Enabled = false;
 
             checkBoxMotor1.Enabled = true;
             checkBoxBright1.Enabled = true;
@@ -517,6 +504,17 @@ namespace Stand_7872_11_00_400
             buttonApplyName.Enabled = false;
             comboBoxCollimators.Items[comboBoxCollimators.SelectedIndex] = selectedCollimator;
             buttonChangeName.Enabled = true;
+        }
+
+        private void buttonShowAllSettings_Click(object sender, EventArgs e)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(Collimator collimator in connectedCollimators)
+            {
+                builder.Append(collimator.getInfo());
+            }
+            
+            MessageBox.Show(builder.ToString(), "Settings", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
         }
     }
 }

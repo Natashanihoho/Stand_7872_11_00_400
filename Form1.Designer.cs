@@ -40,6 +40,7 @@ namespace Stand_7872_11_00_400
             this.checkBoxMotor1 = new System.Windows.Forms.CheckBox();
             this.numericUpDownSpeed1 = new System.Windows.Forms.NumericUpDown();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.checkBoxBright2 = new System.Windows.Forms.CheckBox();
             this.numericUpDownBright2 = new System.Windows.Forms.NumericUpDown();
@@ -57,16 +58,16 @@ namespace Stand_7872_11_00_400
             this.buttonStartAll = new System.Windows.Forms.Button();
             this.textBoxUserName = new System.Windows.Forms.TextBox();
             this.labelFileName = new System.Windows.Forms.Label();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.labelFile = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.labelFile = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.textBoxPort = new System.Windows.Forms.TextBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.buttonApplyName = new System.Windows.Forms.Button();
             this.buttonChangeName = new System.Windows.Forms.Button();
             this.labelInit = new System.Windows.Forms.Label();
-            this.buttonApplyName = new System.Windows.Forms.Button();
+            this.buttonShowAllSettings = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBright1)).BeginInit();
@@ -85,6 +86,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonInit
             // 
+            this.buttonInit.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonInit.Location = new System.Drawing.Point(22, 18);
             this.buttonInit.Name = "buttonInit";
             this.buttonInit.Size = new System.Drawing.Size(152, 38);
@@ -206,6 +208,15 @@ namespace Stand_7872_11_00_400
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Сетка 2";
             // 
+            // groupBox7
+            // 
+            this.groupBox7.Location = new System.Drawing.Point(344, 13);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(142, 142);
+            this.groupBox7.TabIndex = 8;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "groupBox7";
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.checkBoxBright2);
@@ -289,6 +300,7 @@ namespace Stand_7872_11_00_400
             // 
             // comboBoxCollimators
             // 
+            this.comboBoxCollimators.Cursor = System.Windows.Forms.Cursors.Hand;
             this.comboBoxCollimators.Enabled = false;
             this.comboBoxCollimators.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.comboBoxCollimators.FormattingEnabled = true;
@@ -300,6 +312,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonStart
             // 
+            this.buttonStart.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonStart.Enabled = false;
             this.buttonStart.Location = new System.Drawing.Point(22, 320);
             this.buttonStart.Name = "buttonStart";
@@ -324,6 +337,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonLoad
             // 
+            this.buttonLoad.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonLoad.Enabled = false;
             this.buttonLoad.Location = new System.Drawing.Point(12, 55);
             this.buttonLoad.Name = "buttonLoad";
@@ -335,6 +349,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonSave
             // 
+            this.buttonSave.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonSave.Enabled = false;
             this.buttonSave.Location = new System.Drawing.Point(12, 105);
             this.buttonSave.Name = "buttonSave";
@@ -350,6 +365,7 @@ namespace Stand_7872_11_00_400
             // 
             // buttonStartAll
             // 
+            this.buttonStartAll.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonStartAll.Enabled = false;
             this.buttonStartAll.Location = new System.Drawing.Point(187, 320);
             this.buttonStartAll.Name = "buttonStartAll";
@@ -376,15 +392,6 @@ namespace Stand_7872_11_00_400
             this.labelFileName.Size = new System.Drawing.Size(0, 13);
             this.labelFileName.TabIndex = 7;
             // 
-            // groupBox7
-            // 
-            this.groupBox7.Location = new System.Drawing.Point(344, 13);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(142, 142);
-            this.groupBox7.TabIndex = 8;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "groupBox7";
-            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.groupBox9);
@@ -396,6 +403,16 @@ namespace Stand_7872_11_00_400
             this.groupBox8.TabIndex = 8;
             this.groupBox8.TabStop = false;
             // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.labelFile);
+            this.groupBox9.Location = new System.Drawing.Point(14, 13);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(149, 36);
+            this.groupBox9.TabIndex = 10;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Файл";
+            // 
             // labelFile
             // 
             this.labelFile.AutoSize = true;
@@ -406,16 +423,6 @@ namespace Stand_7872_11_00_400
             this.labelFile.TabIndex = 9;
             this.labelFile.Text = ".........................................";
             this.labelFile.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.labelFile);
-            this.groupBox9.Location = new System.Drawing.Point(14, 13);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(149, 36);
-            this.groupBox9.TabIndex = 10;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Файл";
             // 
             // groupBox10
             // 
@@ -448,8 +455,21 @@ namespace Stand_7872_11_00_400
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Коллиматоры";
             // 
+            // buttonApplyName
+            // 
+            this.buttonApplyName.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.buttonApplyName.Enabled = false;
+            this.buttonApplyName.Location = new System.Drawing.Point(91, 77);
+            this.buttonApplyName.Name = "buttonApplyName";
+            this.buttonApplyName.Size = new System.Drawing.Size(72, 23);
+            this.buttonApplyName.TabIndex = 7;
+            this.buttonApplyName.Text = "Применить";
+            this.buttonApplyName.UseVisualStyleBackColor = true;
+            this.buttonApplyName.Click += new System.EventHandler(this.buttonApplyName_Click);
+            // 
             // buttonChangeName
             // 
+            this.buttonChangeName.Cursor = System.Windows.Forms.Cursors.Hand;
             this.buttonChangeName.Enabled = false;
             this.buttonChangeName.Location = new System.Drawing.Point(15, 77);
             this.buttonChangeName.Name = "buttonChangeName";
@@ -470,22 +490,23 @@ namespace Stand_7872_11_00_400
             this.labelInit.Text = "Процесс инициализации...";
             this.labelInit.Visible = false;
             // 
-            // buttonApplyName
+            // buttonShowAllSettings
             // 
-            this.buttonApplyName.Enabled = false;
-            this.buttonApplyName.Location = new System.Drawing.Point(91, 77);
-            this.buttonApplyName.Name = "buttonApplyName";
-            this.buttonApplyName.Size = new System.Drawing.Size(72, 23);
-            this.buttonApplyName.TabIndex = 7;
-            this.buttonApplyName.Text = "Применить";
-            this.buttonApplyName.UseVisualStyleBackColor = true;
-            this.buttonApplyName.Click += new System.EventHandler(this.buttonApplyName_Click);
+            this.buttonShowAllSettings.Enabled = false;
+            this.buttonShowAllSettings.Location = new System.Drawing.Point(471, 23);
+            this.buttonShowAllSettings.Name = "buttonShowAllSettings";
+            this.buttonShowAllSettings.Size = new System.Drawing.Size(75, 40);
+            this.buttonShowAllSettings.TabIndex = 11;
+            this.buttonShowAllSettings.Text = "Показать настройки";
+            this.buttonShowAllSettings.UseVisualStyleBackColor = true;
+            this.buttonShowAllSettings.Click += new System.EventHandler(this.buttonShowAllSettings_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(567, 374);
+            this.Controls.Add(this.buttonShowAllSettings);
             this.Controls.Add(this.labelInit);
             this.Controls.Add(this.groupBox11);
             this.Controls.Add(this.groupBox10);
@@ -566,6 +587,7 @@ namespace Stand_7872_11_00_400
         private System.Windows.Forms.Button buttonChangeName;
         private System.Windows.Forms.Label labelInit;
         private System.Windows.Forms.Button buttonApplyName;
+        private System.Windows.Forms.Button buttonShowAllSettings;
     }
 }
 
