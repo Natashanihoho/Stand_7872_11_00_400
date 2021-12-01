@@ -181,12 +181,12 @@ namespace Stand_7872_11_00_400
             this.numericUpDownSpeed1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownSpeed1.Location = new System.Drawing.Point(39, 19);
             this.numericUpDownSpeed1.Maximum = new decimal(new int[] {
-            10,
+            255,
             0,
             0,
             0});
             this.numericUpDownSpeed1.Minimum = new decimal(new int[] {
-            10,
+            255,
             0,
             0,
             -2147483648});
@@ -284,12 +284,12 @@ namespace Stand_7872_11_00_400
             this.numericUpDownSpeed2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.numericUpDownSpeed2.Location = new System.Drawing.Point(39, 19);
             this.numericUpDownSpeed2.Maximum = new decimal(new int[] {
-            10,
+            255,
             0,
             0,
             0});
             this.numericUpDownSpeed2.Minimum = new decimal(new int[] {
-            10,
+            255,
             0,
             0,
             -2147483648});
@@ -343,7 +343,7 @@ namespace Stand_7872_11_00_400
             this.buttonLoad.Name = "buttonLoad";
             this.buttonLoad.Size = new System.Drawing.Size(151, 35);
             this.buttonLoad.TabIndex = 5;
-            this.buttonLoad.Text = "Загрузить настройки из файла";
+            this.buttonLoad.Text = "Загрузить настройки       \r\nиз файла";
             this.buttonLoad.UseVisualStyleBackColor = true;
             this.buttonLoad.Click += new System.EventHandler(this.buttonLoad_Click);
             // 
@@ -355,7 +355,7 @@ namespace Stand_7872_11_00_400
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(151, 35);
             this.buttonSave.TabIndex = 5;
-            this.buttonSave.Text = "Сохранить настройки в файл";
+            this.buttonSave.Text = "Сохранить настройки         в файл";
             this.buttonSave.UseVisualStyleBackColor = true;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 

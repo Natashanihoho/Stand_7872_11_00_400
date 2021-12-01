@@ -11,7 +11,7 @@ namespace Stand_7872_11_00_400
     public class Grid
     {
         [XmlElement("GRID")]
-        public sbyte Speed { get; set; }
+        public short Speed { get; set; }
 
         public byte Bright { get; set; }
 
@@ -25,7 +25,7 @@ namespace Stand_7872_11_00_400
         {
 
         }
-        public Grid(sbyte speed, byte direct, byte bright, bool isStarted, bool isHeated)
+        public Grid(short speed, byte direct, byte bright, bool isStarted, bool isHeated)
         {
             Speed = speed;
             Direct = direct;

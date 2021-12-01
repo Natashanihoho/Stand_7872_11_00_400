@@ -19,7 +19,7 @@ namespace Stand_7872_11_00_400
         public static bool isInit = false;
         public const byte STARTBYTE = 170;
         public static bool endRX = false;
-        public static byte[] bufTx = new byte[14];
+        public static byte[] bufTx = new byte[15];
         public static byte[] bufRx = new byte[14];
         List<Collimator> connectedCollimators = new List<Collimator>();
         List<Collimator> readedFromXMLCollimators = new List<Collimator>();
@@ -98,9 +98,9 @@ namespace Stand_7872_11_00_400
                 {
                     bufTx[0] = STARTBYTE;
                     bufTx[1] = id;
-                    bufTx[12] = 0;
-                    bufTx[13] = calcSumXOR(bufTx, 13);
-                    serialPort1.Write(bufTx, 0, 14);
+                    bufTx[13] = 0;
+                    bufTx[14] = calcSumXOR(bufTx, 14);
+                    serialPort1.Write(bufTx, 0, 15);
 
                     Console.WriteLine("Send to " + ports[i]);
 
@@ -121,7 +121,7 @@ namespace Stand_7872_11_00_400
 
         public byte[] createPacketToSend (Collimator collimator)
         {
-            byte[] packToSend = new byte[14];
+            byte[] packToSend = new byte[bufTx.Length];
             packToSend[0] = Form1.STARTBYTE;
             packToSend[1] = collimator.ID;
 
@@ -131,12 +131,12 @@ namespace Stand_7872_11_00_400
 
             packToSend[9] = (byte)(collimator.Grid1.Bright * 2);
 
-            sbyte sp1 = collimator.Grid1.Speed;
-            sbyte sp2 = 0;
+            short sp1 = collimator.Grid1.Speed;
+            short sp2 = 0;
             if (sp1 < 0)
             {
                 sp1 = (sbyte)(sp1 * (-1));
-                sp1 = 0;
+                sp2 = 0;
             }
 
             if (collimator.Grid2 != null)
@@ -146,12 +146,13 @@ namespace Stand_7872_11_00_400
                 if (sp2 < 0) sp2 = (sbyte)(sp2 * (-1));
             }
 
-            int speedByte = sp1 + ((sp2 << 4) & 0xF0);
-            packToSend[11] = (byte)speedByte;
+            //int speedByte = sp1 + ((sp2 << 4) & 0xF0);
+            packToSend[11] = (byte)sp1;
+            packToSend[12] = (byte)sp2;
 
-            packToSend[12] =  (collimator.IsFoundOpt == true) ? (byte) 0 : (byte) 1;
+            packToSend[13] =  (collimator.IsFoundOpt == true) ? (byte) 0 : (byte) 1;
 
-            packToSend[13] = Form1.calcSumXOR(packToSend, 13);
+            packToSend[14] = Form1.calcSumXOR(packToSend, 14);
 
             return packToSend;
         }
@@ -189,9 +190,8 @@ namespace Stand_7872_11_00_400
             serialPort1.Open();
             if (serialPort1.IsOpen)
             {
-                serialPort1.Write(pack, 0, 14);
+                serialPort1.Write(pack, 0, pack.Length);
                 Console.WriteLine("TX: " + BitConverter.ToString(pack));
-               // Console.WriteLine("HEAT: " + pack[9] + "%");
                 Thread.Sleep(200);
                 serialPort1.Close();
             }
@@ -342,7 +342,16 @@ namespace Stand_7872_11_00_400
         {
             if(selectedCollimator != null)
             {
-                selectedCollimator.Grid1.Speed = (sbyte)numericUpDownSpeed1.Value;
+                try
+                {
+                    selectedCollimator.Grid1.Speed = (short)numericUpDownSpeed1.Value;
+                }
+                catch
+                {
+                    MessageBox.Show("Недопустимое значение!");
+                    numericUpDownSpeed1.Value = 0;
+                }
+                
                 if (selectedCollimator.Grid1.Speed >= 0) selectedCollimator.Grid1.Direct = 0;
                 else selectedCollimator.Grid1.Direct = 1;
             }                             
@@ -350,8 +359,19 @@ namespace Stand_7872_11_00_400
 
         private void numericUpDownBright1_ValueChanged(object sender, EventArgs e)
         {
-            if (selectedCollimator != null)            
-                selectedCollimator.Grid1.Bright = (byte) numericUpDownBright1.Value;
+            if (selectedCollimator != null)
+            {
+                try
+                {
+                    selectedCollimator.Grid1.Bright = (byte)numericUpDownBright1.Value;
+                }
+                catch
+                {
+                    MessageBox.Show("Недопустимое значение!");
+                    numericUpDownBright1.Value = 0;
+                }
+            }           
+                
             
         }
         //-----------------------------Grid 2-----------------------------------
@@ -359,7 +379,15 @@ namespace Stand_7872_11_00_400
         {
             if (selectedCollimator != null && selectedCollimator.Grid2 != null)
             {
-                selectedCollimator.Grid2.Speed = (sbyte) numericUpDownSpeed2.Value;
+                try
+                {
+                    selectedCollimator.Grid2.Speed = (short)numericUpDownSpeed2.Value;
+                }
+                catch
+                {
+                    MessageBox.Show("Недопустимое значение!");
+                    numericUpDownSpeed2.Value = 0;
+                }
                 if (selectedCollimator.Grid2.Speed >= 0) selectedCollimator.Grid2.Direct = 0;
                 else selectedCollimator.Grid2.Direct = 1;
             }
@@ -369,7 +397,18 @@ namespace Stand_7872_11_00_400
         private void numericUpDownBright2_ValueChanged(object sender, EventArgs e)
         {
             if (selectedCollimator != null && selectedCollimator.Grid2 != null)
-                selectedCollimator.Grid2.Bright = (byte) numericUpDownBright2.Value;
+            {                
+                try
+                {
+                    selectedCollimator.Grid2.Bright = (byte)numericUpDownBright2.Value;
+                }
+                catch
+                {
+                    MessageBox.Show("Недопустимое значение!");
+                    numericUpDownBright2.Value = 0;
+                }
+            }
+                
         }
         
        
